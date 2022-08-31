@@ -1,0 +1,16 @@
+---
+- name: Install nginx and Upload my Web Page
+  hosts: all
+  become: yes
+ 
+  vars:
+     source_file: qwrqwrqwr
+     destin_file: qwrqwrwqetrwegwer
+ 
+  tasks:
+  - name: Debug
+    debug:
+     msg: "lfldsfsdf {{source_file}}"
+  - debug:
+     msg: source_file"
+ 
