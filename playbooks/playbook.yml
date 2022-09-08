@@ -17,3 +17,12 @@
   - name: RedHet
     yum: name=nginx state=latest
     when: ansible_os_family == "RedHet"
+
+
+  - name: Update and upgrade apt packages
+    become: true
+    apt:
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400 #One day
+    when: ansible_os_family == "Debian"
