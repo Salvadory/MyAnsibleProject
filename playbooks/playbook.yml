@@ -1,8 +1,8 @@
 - hosts: server_uat
   become: yes
   vars:
-     source_file_Website: /etc/ansible/Website/
-     destin_file_Website: /root/docker/Website/
+     source_Website: /etc/ansible/Website/
+     destin_Website: /root/docker/Website/
      source_Dockerfile: /etc/ansible/Dockerfile
      destin_Dockerfile: /root/docker/Dockerfiles/
   tasks:
@@ -53,7 +53,7 @@
       name: docker
 
   - name: copy Website 
-    copy: src={{ source_file_Website }} dest={{ destin_file_Website }} 
+    copy: src={{ source_Website }} dest={{ destin_Website }} 
 
   - name: copy Dockerfile 
     copy: src={{ source_Dockerfile }} dest={{ destin_Dockerfile }} 
