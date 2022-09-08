@@ -1,8 +1,10 @@
 - hosts: server_uat
   become: yes
   vars:
-     source_file: /etc/ansible/Website/
-     destin_file: /root/docker/Website/
+     source_files_Website: /etc/ansible/Website/
+     destin_file_Website: /root/docker/Website/
+     source_Dockerfile: /etc/ansible/Dockerfile
+     destin_Dockerfile: /root/docker/Dockerfiles/
   tasks:
   - name: Update and upgrade apt packages
     become: true
@@ -52,10 +54,10 @@
       name: docker
 
   - name: copy Website 
-    copy: src={{ source_file }} dest={{ destin_file }} 
+    copy: src={{ source_file_Website }} dest={{ destin_file_Website }} 
 
   - name: copy Dockerfile 
-    copy: src=/etc/ansible/Dockerfile dest=/root/docker/Dockerfiles/
+    copy: src={{ source_Dockerfile }} dest={{ destin_Dockerfile }} 
 
   - name: Build image from Dockerfile 
     shell: docker build /root/docker/Dockerfiles/. -t test1000
