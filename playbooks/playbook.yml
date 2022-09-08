@@ -1,7 +1,7 @@
 - hosts: server_uat
   become: yes
   vars:
-     source_files_Website: /etc/ansible/Website/
+     source_file_Website: /etc/ansible/Website/
      destin_file_Website: /root/docker/Website/
      source_Dockerfile: /etc/ansible/Dockerfile
      destin_Dockerfile: /root/docker/Dockerfiles/
