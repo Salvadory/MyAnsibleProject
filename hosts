@@ -1,4 +1,4 @@
-# test This is the default ansible 'hosts' file.
+# This is the default ansible 'hosts' file.
 #
 # It should live in /etc/ansible/hosts
 #
@@ -9,19 +9,24 @@
 #   - A hostname/ip can be a member of multiple groups
 
 [server_prod]
-Linux ansible_host=192.168.0.205 
+Ub_prod ansible_host=192.168.0.253 
 [server_uat]
-Linux2 ansible_host=192.168.0.194 ansible_user=ansible ansible_ssh_private_key_file=/root/.ssh/id_rsa
+Ub_uat ansible_host=192.168.0.254
+
 #[SERVERS]
 #Linux3 ansible_host=192.168.0.194
 
-[staging_ALL:children]
+[Server_ALL:children]
 server_prod
 server_uat
 
 [server_prod:vars]
 ansible_user=ansible
-ansible_ssh_private_key_file=/root/.ssh/id_rsa
+ansible_ssh_private_key_file=/root/.ssh/id_rsa_jk
+
+[server_uat:vars]
+ansible_user=ansible
+ansible_ssh_private_key_file=/root/.ssh/id_rsa_jk
 
 
 # Ex  1: Ungrouped hosts, specify before any group headers:
