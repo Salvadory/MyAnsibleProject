@@ -12,8 +12,10 @@
     apt:
       name=nginx
       state=latest
-    command: ip a
     when: ansible_os_family == "Debian"
+
+  - name: what ip  
+    command: ip a
 
   - name: Install NGINX to RedHet OS
     yum: 
