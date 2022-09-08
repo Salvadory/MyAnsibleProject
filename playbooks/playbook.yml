@@ -12,11 +12,44 @@
       cache_valid_time: 86400 #One day
 
 
-  - name: Install Docker 
+  - name: Install aptitude
     apt:
-      name=docker
-      state=latest
+      name: aptitude
+      state: latest
+      update_cache: true
 
+  - name: Install required system packages
+    apt:
+      pkg:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - python3-pip
+        - virtualenv
+        - python3-setuptools
+      state: latest
+      update_cache: true
+
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu focal stable
+      state: present
+
+  - name: Update apt and install docker-ce
+    apt:
+      name: docker-ce
+      state: latest
+      update_cache: true
+
+  - name: Install Docker Module for Python
+    pip:
+      name: docker
 
   - name: copy Website 
     copy: src={{ source_file }} dest={{ destin_file }} 
@@ -24,17 +57,14 @@
   - name: copy Dockerfile 
     copy: src=/etc/ansible/Dockerfile dest=/root/docker/Dockerfiles/
 
-
   - name: Build image from Dockerfile 
     shell: docker build /root/docker/Dockerfiles/. -t test1000
     register: output
-
 
   - name: Docker run 
     shell: docker run --rm -d -p 80:80 -u root --name nginx_test -v /root/docker/Website/:/var/www/html:ro test1000
     register: output
 
- 
   - name: Print output
     debug:
       var: output.stdout
