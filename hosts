@@ -16,7 +16,7 @@ Ub_uat ansible_host=192.168.0.254
 #[SERVERS]
 #Linux3 ansible_host=192.168.0.194
 
-[Server_ALL:children]
+[Servers_ALL:children]
 server_prod
 server_uat
 

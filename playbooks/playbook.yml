@@ -1,4 +1,4 @@
-- hosts: server_uat
+- hosts: Servers_ALL
   become: yes
   vars:
      source_Website: /etc/ansible/Website/
