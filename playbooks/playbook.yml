@@ -1,32 +1,17 @@
 
 - hosts: Server_ALL
   become: yes
-  vars:
-     source_file: ./website/index.html
-     destin_file: /var/www/html
+#  vars:
+#     source_file: ./website/index.html
+#     destin_file: /var/www/html
   tasks:
   - name: Cheack and Print Linux Version
     debug: var=ansible_os_family
 
-
   - name: Debian
     apt: name=nginx state=latest
-    notify: Restart nginx
     when: ansible_os_family == "Debian"
-
 
   - name: RedHet
     yum: name=nginx state=latest
-    notify: Restart nginx
     when: ansible_os_family == "RedHet"
-
-  - name: Start nginx and Enable it on every boot
-    service: name=nginx state=started enabled=yes
-    when: ansible_os_family == "RedHet"
-    
-    handlers:
-    - name: restart nginx
-      ansible.builtin.service:
-        name: nginx
-        state: reloaded
-      become: yes
