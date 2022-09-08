@@ -9,8 +9,7 @@
     debug: var=ansible_os_family
 
   - name: Debian
-#    apt:
-    ansible.builtin.apt:
+    apt:
       name=nginx
       state=latest
     when: ansible_os_family == "Debian"
