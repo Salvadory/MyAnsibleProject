@@ -1,4 +1,5 @@
 - hosts: Servers_ALL
+  any_errors_fatal: true
   become: yes
   vars:
      source_Website: /etc/ansible/Website/
