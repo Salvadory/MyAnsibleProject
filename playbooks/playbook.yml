@@ -12,6 +12,7 @@
   - name: Debian
     apt: name=nginx state=latest
     notify: Restart nginx
+    
   - name: Start nginx and Enable it on every boot
     service: name=nginx state=started enabled=yes
     when: ansible_os_family == "Debian"
@@ -21,7 +22,7 @@
     yum: name=nginx state=latest
     notify: Restart nginx
     when: ansible_os_family == "RedHet"
-    
+
   - name: Start nginx and Enable it on every boot
     service: name=nginx state=started enabled=yes
     when: ansible_os_family == "RedHet"
