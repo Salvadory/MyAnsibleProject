@@ -1,4 +1,4 @@
-- hosts: "{{ Host }}"
+- hosts: "{{ host }}"
   any_errors_fatal: true
   become: yes
   vars:
