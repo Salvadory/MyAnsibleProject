@@ -13,7 +13,6 @@
       update_cache: yes
       cache_valid_time: 86400 #One day
 
-
   - name: Install aptitude
     apt:
       name: aptitude
@@ -68,7 +67,7 @@
       var: output.stdout
 
   - name: Docker run 
-    shell: docker run --rm -d -p 8080:80 -u root --name nginx_test -v /root/docker/Website/:/var/www/html:ro test1000
+    shell: docker stop nginx_test && docker run --rm -d -p 8080:80 -u root --name nginx_test -v /root/docker/Website/:/var/www/html:ro test1000
     register: output
 
   - name: Print output
