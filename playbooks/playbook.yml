@@ -9,9 +9,16 @@
     debug: var=ansible_os_family
 
   - name: Debian
-    apt: name=nginx state=latest
+    apt:
+#    ansible.builtin.apt:
+      name=nginx
+      state=latest
     when: ansible_os_family == "Debian"
 
   - name: RedHet
     yum: name=nginx state=latest
     when: ansible_os_family == "RedHet"
+
+        upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
