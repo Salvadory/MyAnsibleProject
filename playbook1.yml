@@ -1,9 +1,0 @@
-
----
-- name: My TEST Playbook
-  hosts: all
-  become: yes
- 
-  tasks:
-  - name: Ping test
-    ping:

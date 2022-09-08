@@ -1,0 +1,99 @@
+example 1
+---
+- name: My TEST Playbook
+  hosts: all
+  become: yes
+  tasks:
+  - name: Ping test
+    ping:
+
+example 2
+---
+- name: install NGINX
+  hosts: all
+  become: yes
+  tasks:
+  - name: install NGINX
+    apt: name=nginx state=latest
+  - name: Start NGINX
+    service: name=nginx state=started enabled=yes
+
+example 3
+---
+- name: Install nginx and Upload my Web Page
+  hosts: all
+  become: yes
+  vars:
+     source_file: ./website/index.html
+     destin_file: /var/www/html
+  tasks:
+  - name: Install nginx Web Server
+    apt: name=nginx state=latest
+  - name: Copy index html to Servers
+    copy: src={{ source_file }} dest={{ destin_file }} mode=0555
+    notify: Restart nginx
+  - name: Start nginx and Enable it on every boot
+    service: name=nginx state=started enabled=yes
+  handlers:
+  - name: Restart nginx
+    service: name=nginx state=restarted
+...
+
+example 4
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: "Uninstall NginX"
+      apt:
+        name: nginx*
+        state: absent
+    - name: "Stop Nginx Services"
+      service:
+        name: nginx
+        state: stopped
+
+example 5
+---
+- name: Install nginx and Upload my Web Page
+  hosts: all
+  become: yes
+  vars:
+     source_file: qwrqwrqwr
+     destin_file: qwrqwrwqetrwegwer
+  tasks:
+  - name: Debug
+    debug:
+     msg: "lfldsfsdf {{source_file}}"
+  - debug:
+     msg: source_file"
+ 
+ example 6
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Cheack and Print Linux Version
+    debug: var=ansible_os_family
+  - name: Debian
+    apt: name=nginx state=latest
+    when: ansible_os_family == "Debian"
+  - name: RedHet
+    yum: name=nginx state=latest
+    when: ansible_os_family == "RedHet"
+
+example 7
+---
+- name: Loops Playbook
+  hosts: all
+  become: yes
+  - name: Loop Until example
+    shell: echo -n Z >> myfile.txt && cat myfile.txt
+	 register: output
+	 delay: 2
+	 retries: 10
+	 until: output.stdout.find{"ZZZZ"} == false
+  - name: Print output
+    debug:
+	   var: output.stdout
+
