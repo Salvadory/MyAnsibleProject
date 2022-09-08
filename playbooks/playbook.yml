@@ -71,7 +71,7 @@
     ignore_errors: yes
 
   - name: Docker run 
-    shell: docker stop nginx_test && docker run --rm -d -p 8080:80 -u root --name nginx_test -v /root/docker/Website/:/var/www/html:ro test1000
+    shell: docker run --rm -d -p 8080:80 -u root --name nginx_test -v /root/docker/Website/:/var/www/html:ro test1000
     register: output
 
   - name: Print output
