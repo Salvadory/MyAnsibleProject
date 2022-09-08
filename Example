@@ -95,5 +95,5 @@ example 7
 	 until: output.stdout.find{"ZZZZ"} == false
   - name: Print output
     debug:
-	   var: output.stdout
+	    var: output.stdout
 

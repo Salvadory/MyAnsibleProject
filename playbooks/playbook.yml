@@ -1,9 +1,9 @@
 
 - hosts: server_uat
   become: yes
-#  vars:
-#     source_file: ./website/index.html
-#     destin_file: /var/www/html
+  vars:
+     source_file: /etc/ansible/Website/
+     destin_file: /root/Website/
   tasks:
   - name: Update and upgrade apt packages
     become: true
@@ -19,11 +19,11 @@
       state=latest
 
 
-  - name: copy Dockerfile 
-    copy: src={{ source_file }} dest={{ destin_file }} mode=0555
+  - name: copy Website 
+    copy: src={{ source_file }} dest={{ destin_file }} 
 
   - name: copy Dockerfile 
-    copy: src={{ source_file }} dest={{ destin_file }} 
+    copy: src=/etc/ansible/Dockerfile dest=/root/
 
 
   - name: Build image from Dockerfile 
