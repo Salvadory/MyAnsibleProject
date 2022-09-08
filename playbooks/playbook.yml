@@ -8,14 +8,17 @@
   - name: Cheack and Print Linux Version
     debug: var=ansible_os_family
 
-  - name: Debian
+  - name: Install NGINX to Debian OS
     apt:
       name=nginx
       state=latest
+    command: ip a
     when: ansible_os_family == "Debian"
 
-  - name: RedHet
-    yum: name=nginx state=latest
+  - name: Install NGINX to RedHet OS
+    yum: 
+      name=nginx
+      state=latest
     when: ansible_os_family == "RedHet"
 
 
