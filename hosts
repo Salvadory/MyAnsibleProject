@@ -30,7 +30,7 @@ ansible_ssh_private_key_file=/root/.ssh/id_rsa_jk
 
 
 # Ex  1: Ungrouped hosts, specify before any group headers:
- 
+   
 ## green.example.com
 ## blue.example.com
 ## 192.168.100.1
