@@ -1,0 +1,32 @@
+
+- hosts: Server_ALL
+  become: yes
+#  vars:
+#     source_file: ./website/index.html
+#     destin_file: /var/www/html
+  tasks:
+  - name: Update and upgrade apt packages
+    become: true
+    apt:
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400 #One day
+    when: ansible_os_family == "Debian"
+  
+  - name: Cheack and Print Linux Version
+    debug: var=ansible_os_family
+
+  - name: Install NGINX to Debian OS
+    apt:
+      name=nginx
+      state=latest
+    when: ansible_os_family == "Debian"
+
+  - name: Install NGINX to RedHet OS
+    yum: 
+      name=nginx
+      state=latest
+    when: ansible_os_family == "RedHet"
+
+
+ 
