@@ -8,7 +8,7 @@
 #   - You can enter hostnames or ip addresses
 #   - A hostname/ip can be a member of multiple groups
 
-[webserver_prod]
+[server_prod]
 Linux ansible_host=192.168.0.205 
 [server_uat]
 Linux2 ansible_host=192.168.0.194 ansible_user=ansible ansible_ssh_private_key_file=/root/.ssh/id_rsa
@@ -16,10 +16,10 @@ Linux2 ansible_host=192.168.0.194 ansible_user=ansible ansible_ssh_private_key_f
 #Linux3 ansible_host=192.168.0.194
 
 [staging_ALL:children]
-webserver_prod
+server_prod
 server_uat
 
-[webserver_prod:vars]
+[server_prod:vars]
 ansible_user=ansible
 ansible_ssh_private_key_file=/root/.ssh/id_rsa
 
