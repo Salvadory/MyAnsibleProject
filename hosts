@@ -21,11 +21,11 @@ server_prod
 server_uat
 
 [server_prod:vars]
-ansible_user=ansible
+ansible_user=root
 ansible_ssh_private_key_file=/root/.ssh/id_rsa_jk
 
 [server_uat:vars]
-ansible_user=ansible
+ansible_user=root
 ansible_ssh_private_key_file=/root/.ssh/id_rsa_jk
 
 
