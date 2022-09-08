@@ -14,12 +14,6 @@
       state=latest
     when: ansible_os_family == "Debian"
 
-  - name: what ip  
-    command: ip a
-
-  - name: what ip2  
-    debug: ip a
-
   - name: Install NGINX to RedHet OS
     yum: 
       name=nginx
