@@ -52,52 +52,60 @@
       - sudo sed -i "s/^SELINUX=enforcing$/SELINUX=permissive/" /etc/selinux/config
       - swapoff -a
 
+   - name: firewalld configuration k8s_master
+     firewalld:
+      port: "{{ item }}"
+      permanent: yes
+      state: enabled
+     when: inventory_hostname in groups['k8s_master']
+#    notify: reload firewalld
+     loop:
+       - 6443/tcp
+       - 2379-2380/tcp
+       - 10250/tcp
+       - 10251/tcp
+       - 10252/tcp
+       - 10255/tcp
+
+   - name: firewalld configuration K8s_Workers
+     firewalld:
+      port: "{{ item }}"
+      permanent: yes
+      state: enabled
+     when: inventory_hostname in groups['K8s_Workers']
+#    notify: reload firewalld
+     loop:
+       - 6783/tcp
+       - 10250/tcp
+       - 10255/tcp
+       - 30000-32767/tcp
+
    - name: Update firewall rules for master
      shell: " {{ item }}"
      with_items:
-      - firewall-cmd --permanent --add-port=6443/tcp
-      - firewall-cmd --permanent --add-port=2379-2380/tcp
-      - firewall-cmd --permanent --add-port=10250/tcp
-      - firewall-cmd --permanent --add-port=10251/tcp
-      - firewall-cmd --permanent --add-port=10252/tcp
-      - firewall-cmd --permanent --add-port=10255/tcp
       - firewall-cmd --reload
       - modprobe br_netfilter
       - echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
-     when: inventory_hostname in groups['k8s-master']
-
-   - name: Update firewall rules for worker
-     shell: " {{ item }}"
-     with_items:
-      - firewall-cmd --permanent --add-port=6783/tcp
-      - firewall-cmd --permanent --add-port=10250/tcp
-      - firewall-cmd --permanent --add-port=10255/tcp
-      - firewall-cmd --permanent --add-port=30000-32767/tcp
-      - firewall-cmd  --reload
-      - echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
-     when: inventory_hostname in groups['K8s_workers']
-
-   
 
    - name: rm cont
      ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
      ignore_errors: yes
-     when: inventory_hostname in groups['k8s-master']
+     when: inventory_hostname in groups['k8s_master']
      
    - name: ser cont
      ansible.builtin.command: "sudo systemctl restart containerd"
-     when: inventory_hostname in groups['k8s-master']
+     when: inventory_hostname in groups['k8s_master']
      
    - name: kubectl apply
      ansible.builtin.command: "sudo kubeadm init --apiserver-advertise-address=192.168.0.110 --pod-network-cidr=10.244.0.0/16"
      register: output
      ignore_errors: yes
-     when: inventory_hostname in groups['k8s-master']
+     when: inventory_hostname in groups['k8s_master']
 
    - name: Print output
      debug:
       var: output.stdout
-     when: inventory_hostname in groups['k8s-master']
+     when: inventory_hostname in groups['k8s_master']
     
    - name: kubectl apply
      ansible.builtin.shell: " {{ item }}"
@@ -106,7 +114,7 @@
       - "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
       - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
       - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
-     when: inventory_hostname in groups['k8s-master']
+     when: inventory_hostname in groups['k8s_master']
 
 
 
