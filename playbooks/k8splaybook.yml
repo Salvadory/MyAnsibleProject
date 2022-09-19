@@ -58,7 +58,7 @@
       permanent: yes
       state: enabled
      when: inventory_hostname in groups['k8s_master']
-#    notify: reload firewalld
+     notify: reload firewalld
      loop:
        - 6443/tcp
        - 2379-2380/tcp
@@ -73,7 +73,7 @@
       permanent: yes
       state: enabled
      when: inventory_hostname in groups['K8s_Workers']
-#    notify: reload firewalld
+     notify: reload firewalld
      loop:
        - 6783/tcp
        - 10250/tcp
@@ -115,6 +115,11 @@
       - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
       - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
      when: inventory_hostname in groups['k8s_master']
+
+  handlers:
+   - name: reload firewalld
+     command: firewall-cmd --reload
+
 
 
 
