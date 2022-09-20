@@ -4,7 +4,7 @@
   tasks:
    - name: prepare
      shell: " {{ item }}"
-     with_items:
+     loop:
       - hostnamectl set-hostname master-node
       - echo 192.168.0.110 master-node >> /etc/hosts
       - echo 192.168.0.111 worker-node-1 >> /etc/hosts
@@ -41,13 +41,13 @@
               
    - name: Docker run 
      shell: " {{ item }}"
-     with_items:
+     loop:
       - systemctl start kubelet && systemctl enable --now kubelet
       - systemctl start docker && systemctl enable docker
 
    - name: Disable SELinux and update firewall rules 
      shell: " {{ item }}"
-     with_items:
+     loop:
       - sudo setenforce 0
       - sudo sed -i "s/^SELINUX=enforcing$/SELINUX=permissive/" /etc/selinux/config
       - swapoff -a
@@ -82,7 +82,7 @@
 
    - name: Update firewall rules for master
      shell: " {{ item }}"
-     with_items:
+     loop:
       - modprobe br_netfilter
       - echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
@@ -108,7 +108,7 @@
     
    - name: kubectl apply
      ansible.builtin.shell: " {{ item }}"
-     with_items:
+     loop:
       - "mkdir -p $HOME/.kube"
       - "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
       - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
