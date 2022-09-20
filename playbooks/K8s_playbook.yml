@@ -119,6 +119,12 @@
    - name: reload firewalld
      command: firewall-cmd --reload
 
+   - name: restarted containerd
+     ansible.builtin.service:
+        name: containerd
+        state: restarted
+
+
 
 
 
