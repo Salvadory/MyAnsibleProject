@@ -38,9 +38,9 @@
      yum:
       name: 
         - docker-ce
-        - docker-ce-cli
-        - containerd.io
-        - docker-compose-plugin
+#        - docker-ce-cli
+#        - containerd.io
+#        - docker-compose-plugin
         - kubelet
         - kubeadm
         - kubectl
@@ -49,8 +49,10 @@
    - name: Docker run 
      shell: " {{ item }}"
      loop:
-      - systemctl start kubelet && systemctl enable --now kubelet
-      - systemctl start docker && systemctl enable docker
+      - sed -i s/cgroup-driver=systemd/cgroup-driver=cgroupfs/  /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+      - systemctl daemon-reload
+      - systemctl restart kubelet && systemctl enable --now kubelet
+      - systemctl restart docker && systemctl enable docker
      
      
 
@@ -60,6 +62,12 @@
       - sudo setenforce 0
       - sudo sed -i "s/^SELINUX=enforcing$/SELINUX=permissive/" /etc/selinux/config
       - swapoff -a
+
+   - name: Swapoff string
+     lineinfile:
+      dest: /etc/fstab
+      search_string: '/dev/mapper/centos-swap swap                    swap    defaults        0 0'
+      line: '#/dev/mapper/centos-swap swap                    swap    defaults        0 0'
 
    - name: firewalld configuration k8s_master
      firewalld:
@@ -116,6 +124,7 @@
    - name: kubectl apply
      ansible.builtin.shell: " {{ item }}"
      loop:
+      - "rm -r $HOME/.kube"
       - "mkdir -p $HOME/.kube"
       - "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
       - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
@@ -131,15 +140,16 @@
       var: join_command_raw.stdout
 
 
-#   - name: set join command
-#     set_fact:
-#     join_command: "{{ join_command_raw.stdout_lines[0] }}"
-#     when: inventory_hostname in groups['K8s_Workers']
+   - name: set join command
+     set_fact:
+      join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
 
 
    - name: join cluster
-     shell: "{{ join_command_raw.stdout }}"
+     shell: "{{ join_command }}"
      register: join
+     when: inventory_hostname in groups['K8s_Workers']
 
    - debug:
       var: join
