@@ -9,11 +9,12 @@
 #      - echo 192.168.0.110 master-node >> /etc/hosts
 #      - echo 192.168.0.111 worker-node-1 >> /etc/hosts
 #      - echo 192.168.0.112  worker-node-2 >> /etc/hosts
-
+   - debug:
+      var: inventory_hostname
       
    - name: Set a hostname
      ansible.builtin.hostname:
-      name: inventory_hostname
+      name: "{{ inventory_hostname}}"
 
    - name: add DNS string
      lineinfile:
@@ -108,10 +109,6 @@
      ignore_errors: yes
      when: inventory_hostname in groups['k8s_master']
      
-#   - name: ser cont
-#    ansible.builtin.command: "sudo systemctl restart containerd"
-#     when: inventory_hostname in groups['k8s_master']
-     
    - name: reload firewalld
      command: firewall-cmd --reload
      when: inventory_hostname in groups['k8s_master']
@@ -124,14 +121,8 @@
 
    - name: kubectl apply
      ansible.builtin.command: "sudo kubeadm init --apiserver-advertise-address=192.168.0.110 --pod-network-cidr=10.244.0.0/16"
-#     register: output
      ignore_errors: yes
      when: inventory_hostname in groups['k8s_master']
-
-#   - name: Print output
-#     debug:
-#      var: output.stdout
-#     when: inventory_hostname in groups['k8s_master']
     
    - name: kubectl apply
      ansible.builtin.shell: " {{ item }}"
@@ -147,17 +138,21 @@
      register: join_command_raw
      when: inventory_hostname in groups['k8s_master']
 
+   - debug:
+      var: join_command_raw.stdout
+
+
 #   - name: set join command
 #     set_fact:
 #     join_command: "{{ join_command_raw.stdout_lines[0] }}"
 #     when: inventory_hostname in groups['K8s_Workers']
 
 
-   - name: join cluster
-     shell: "{{ hostvars['soldier76'].join_command }} --cri-socket=/run/containerd/containerd.sock >> node_joined.txt"
-     args:
-      chdir: $HOME
-      creates: node_joined.txt
+#   - name: join cluster
+#     shell: "{{ hostvars['soldier76'].join_command }} --cri-socket=/run/containerd/containerd.sock >> node_joined.txt"
+#     args:
+#      chdir: $HOME
+#      creates: node_joined.txt
 
   handlers:
    - name: reload firewalld
