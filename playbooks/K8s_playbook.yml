@@ -2,13 +2,24 @@
   any_errors_fatal: true
   become: yes
   tasks:
-   - name: prepare
-     shell: " {{ item }}"
-     loop:
-      - hostnamectl set-hostname master-node
-      - echo 192.168.0.110 master-node >> /etc/hosts
-      - echo 192.168.0.111 worker-node-1 >> /etc/hosts
-      - echo 192.168.0.112  worker-node-2 >> /etc/hosts
+#   - name: prepare
+#     shell: " {{ item }}"
+#     loop:
+#      - hostnamectl set-hostname master-node
+#      - echo 192.168.0.110 master-node >> /etc/hosts
+#      - echo 192.168.0.111 worker-node-1 >> /etc/hosts
+#      - echo 192.168.0.112  worker-node-2 >> /etc/hosts
+
+   - name: add DNS string
+     lineinfile:
+      dest: /etc/hosts
+#      search_string: 'master-node'
+#      regexp: "{{ item.regexp }}"
+      line: "{{ item }}"
+     loop: 
+      - '192.168.0.110 master-node'
+      - '192.168.0.111 worker-node-1'
+      - '192.168.0.112 worker-node-2'
 
    - name: Install yum-utils
      yum:
@@ -66,7 +77,6 @@
        - 10251/tcp
        - 10252/tcp
        - 10255/tcp
-     notify: reload firewalld
      when: inventory_hostname in groups['k8s_master']
      
 
@@ -80,7 +90,6 @@
        - 10250/tcp
        - 10255/tcp
        - 30000-32767/tcp
-     notify: reload firewalld
      when: inventory_hostname in groups['K8s_Workers']
      
 
@@ -134,10 +143,17 @@
      register: join_command_raw
      when: inventory_hostname in groups['k8s_master']
 
-   - name: set join command
-     set_fact:
-      join_command: "{{ join_command_raw.stdout_lines[0] }}"
-     when: inventory_hostname in groups['K8s_Workers']
+#   - name: set join command
+#     set_fact:
+#     join_command: "{{ join_command_raw.stdout_lines[0] }}"
+#     when: inventory_hostname in groups['K8s_Workers']
+
+
+   - name: join cluster
+     shell: "{{ hostvars['soldier76'].join_command }} --cri-socket=/run/containerd/containerd.sock >> node_joined.txt"
+     args:
+      chdir: $HOME
+      creates: node_joined.txt
 
   handlers:
    - name: reload firewalld
