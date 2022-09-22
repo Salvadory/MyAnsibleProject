@@ -30,10 +30,10 @@
    - name: install packages
      yum:
       name: 
-        - docker-ce
-        - docker-ce-cli
+#        - docker-ce
+#        - docker-ce-cli
         - containerd.io
-        - docker-compose-plugin
+#        - docker-compose-plugin
         - kubelet
         - kubeadm
         - kubectl
@@ -43,7 +43,8 @@
      shell: " {{ item }}"
      loop:
       - systemctl start kubelet && systemctl enable --now kubelet
-      - systemctl start docker && systemctl enable docker
+#      - systemctl start docker && systemctl enable docker
+     
 
    - name: Disable SELinux and update firewall rules 
      shell: " {{ item }}"
@@ -57,8 +58,6 @@
       port: "{{ item }}"
       permanent: yes
       state: enabled
-     when: inventory_hostname in groups['k8s_master']
-     notify: reload firewalld
      loop:
        - 6443/tcp
        - 2379-2380/tcp
@@ -66,19 +65,23 @@
        - 10251/tcp
        - 10252/tcp
        - 10255/tcp
+     notify: reload firewalld
+     when: inventory_hostname in groups['k8s_master']
+     
 
    - name: firewalld configuration K8s_Workers
      firewalld:
       port: "{{ item }}"
       permanent: yes
       state: enabled
-     when: inventory_hostname in groups['K8s_Workers']
-     notify: reload firewalld
      loop:
        - 6783/tcp
        - 10250/tcp
        - 10255/tcp
        - 30000-32767/tcp
+     notify: reload firewalld
+     when: inventory_hostname in groups['K8s_Workers']
+     
 
    - name: Update firewall rules for master
      shell: " {{ item }}"
@@ -86,10 +89,10 @@
       - modprobe br_netfilter
       - echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
-   - name: rm cont
-     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
-     ignore_errors: yes
-     when: inventory_hostname in groups['k8s_master']
+#   - name: rm cont
+#     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
+#     ignore_errors: yes
+#     when: inventory_hostname in groups['k8s_master']
      
 #   - name: ser cont
 #     ansible.builtin.command: "sudo systemctl restart containerd"
@@ -133,6 +136,11 @@
      ansible.builtin.service:
         name: containerd
         state: restarted
+
+   - name: rm cont
+     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
+     ignore_errors: yes
+
 
 
 
