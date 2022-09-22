@@ -15,7 +15,7 @@ master_node ansible_host=192.168.0.110
 worker_node1 ansible_host=192.168.0.111
 
 [k8s_worker2]
-worker_node2 ansible_host=192.168.0.112 
+workernode2 ansible_host=192.168.0.112 
 
 [K8s_Servers:children]
 k8s_master

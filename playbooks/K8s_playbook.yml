@@ -2,15 +2,6 @@
   any_errors_fatal: true
   become: yes
   tasks:
-#   - name: prepare
-#     shell: " {{ item }}"
-#     loop:
-#      - hostnamectl set-hostname master-node
-#      - echo 192.168.0.110 master-node >> /etc/hosts
-#      - echo 192.168.0.111 worker-node-1 >> /etc/hosts
-#      - echo 192.168.0.112  worker-node-2 >> /etc/hosts
-   - debug:
-      var: inventory_hostname
       
    - name: Set a hostname
      ansible.builtin.hostname:
