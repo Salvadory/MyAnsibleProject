@@ -1,6 +1,7 @@
 - hosts: K8s_Servers
   any_errors_fatal: true
   become: yes
+  gather_facts: true
   tasks:
       
    - name: Set a hostname
@@ -146,7 +147,15 @@
       join_command: "{{ join_command_raw.stdout }}"
      when: inventory_hostname in groups['k8s_master']
 
-
+   - name: Reboot host and wait for it to restart
+     reboot:
+      msg: "Reboot initiated by Ansible"
+      connect_timeout: 5
+      reboot_timeout: 600
+      pre_reboot_delay: 0
+      post_reboot_delay: 30
+      test_command: whoami
+     when: inventory_hostname in groups['K8s_Workers']
 
    - name: join cluster
      shell: "{{ hostvars['masternode'].join_command }}"
