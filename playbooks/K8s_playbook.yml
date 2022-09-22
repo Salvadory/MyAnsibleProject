@@ -10,6 +10,11 @@
 #      - echo 192.168.0.111 worker-node-1 >> /etc/hosts
 #      - echo 192.168.0.112  worker-node-2 >> /etc/hosts
 
+      
+   - name: Set a hostname
+     ansible.builtin.hostname:
+      name: inventory_hostname
+
    - name: add DNS string
      lineinfile:
       dest: /etc/hosts
