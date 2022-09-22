@@ -91,9 +91,9 @@
      ignore_errors: yes
      when: inventory_hostname in groups['k8s_master']
      
-   - name: ser cont
-     ansible.builtin.command: "sudo systemctl restart containerd"
-     when: inventory_hostname in groups['k8s_master']
+#   - name: ser cont
+#     ansible.builtin.command: "sudo systemctl restart containerd"
+#     when: inventory_hostname in groups['k8s_master']
      
    - name: kubectl apply
      ansible.builtin.command: "sudo kubeadm init --apiserver-advertise-address=192.168.0.110 --pod-network-cidr=10.244.0.0/16"
@@ -101,10 +101,10 @@
      ignore_errors: yes
      when: inventory_hostname in groups['k8s_master']
 
-   - name: Print output
-     debug:
-      var: output.stdout
-     when: inventory_hostname in groups['k8s_master']
+#   - name: Print output
+#     debug:
+#      var: output.stdout
+#     when: inventory_hostname in groups['k8s_master']
     
    - name: kubectl apply
      ansible.builtin.shell: " {{ item }}"
@@ -114,6 +114,16 @@
       - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
       - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
      when: inventory_hostname in groups['k8s_master']
+
+   - name: get join command
+     shell: kubeadm token create --print-join-command
+     register: join_command_raw
+     when: inventory_hostname in groups['k8s_master']
+
+   - name: set join command
+     set_fact:
+      join_command: "{{ join_command_raw.stdout_lines[0] }}"
+     when: inventory_hostname in groups['K8s_Workers']
 
   handlers:
    - name: reload firewalld
