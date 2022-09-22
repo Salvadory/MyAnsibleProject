@@ -104,9 +104,9 @@
       - modprobe br_netfilter
       - echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
-   - name: rm cont
-     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
-     ignore_errors: yes
+   - name: rm containerd config
+     ansible.builtin.command: if [[ -f "/etc/containerd/config.toml" ]]; then sudo rm "/etc/containerd/config.toml"; fi
+#     ignore_errors: yes
      
    - name: reload firewalld
      command: firewall-cmd --reload
@@ -121,12 +121,12 @@
      ansible.builtin.command: "sudo kubeadm init --apiserver-advertise-address=192.168.0.110 --pod-network-cidr=10.244.0.0/16"
      ignore_errors: yes
      when: inventory_hostname in groups['k8s_master']
-    
+
    - name: kubectl apply
      ansible.builtin.shell: " {{ item }}"
      loop:
-      - "rm -r $HOME/.kube"
-      - "mkdir -p $HOME/.kube"
+      - if [[ -d "$HOME/.kube" ]]; then rm -r "$HOME/.kube"; fi 
+      - mkdir -p "$HOME/.kube"
       - "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
       - "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
       - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
@@ -161,7 +161,6 @@
      shell: "{{ hostvars['masternode'].join_command }}"
      register: join
      when: inventory_hostname in groups['K8s_Workers']
-
 
    - debug:
       var: join
