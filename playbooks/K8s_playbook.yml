@@ -30,10 +30,10 @@
    - name: install packages
      yum:
       name: 
-#        - docker-ce
-#        - docker-ce-cli
+        - docker-ce
+        - docker-ce-cli
         - containerd.io
-#        - docker-compose-plugin
+        - docker-compose-plugin
         - kubelet
         - kubeadm
         - kubectl
@@ -43,7 +43,8 @@
      shell: " {{ item }}"
      loop:
       - systemctl start kubelet && systemctl enable --now kubelet
-#      - systemctl start docker && systemctl enable docker
+      - systemctl start docker && systemctl enable docker
+     
      
 
    - name: Disable SELinux and update firewall rules 
@@ -89,18 +90,28 @@
       - modprobe br_netfilter
       - echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
-#   - name: rm cont
-#     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
-#     ignore_errors: yes
-#     when: inventory_hostname in groups['k8s_master']
+   - name: rm cont
+     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
+     ignore_errors: yes
+     when: inventory_hostname in groups['k8s_master']
      
 #   - name: ser cont
-#     ansible.builtin.command: "sudo systemctl restart containerd"
+#    ansible.builtin.command: "sudo systemctl restart containerd"
 #     when: inventory_hostname in groups['k8s_master']
      
+   - name: reload firewalld
+     command: firewall-cmd --reload
+     when: inventory_hostname in groups['k8s_master']
+     
+   - name: restarted containerd
+     ansible.builtin.service:
+        name: containerd
+        state: restarted
+     when: inventory_hostname in groups['k8s_master']
+
    - name: kubectl apply
      ansible.builtin.command: "sudo kubeadm init --apiserver-advertise-address=192.168.0.110 --pod-network-cidr=10.244.0.0/16"
-     register: output
+#     register: output
      ignore_errors: yes
      when: inventory_hostname in groups['k8s_master']
 
@@ -136,10 +147,6 @@
      ansible.builtin.service:
         name: containerd
         state: restarted
-
-   - name: rm cont
-     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
-     ignore_errors: yes
 
 
 
