@@ -14,7 +14,6 @@
      lineinfile:
       dest: /etc/hosts
 #      search_string: 'master-node'
-#      regexp: "{{ item.regexp }}"
       line: "{{ item }}"
      loop: 
       - '192.168.0.110 master-node'
