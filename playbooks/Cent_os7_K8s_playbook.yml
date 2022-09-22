@@ -105,8 +105,8 @@
       - echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
    - name: rm containerd config
-     ansible.builtin.command: if [[ -f "/etc/containerd/config.toml" ]]; then sudo rm "/etc/containerd/config.toml"; fi
-#     ignore_errors: yes
+     ansible.builtin.command: "sudo rm /etc/containerd/config.toml"
+     ignore_errors: yes
      
    - name: reload firewalld
      command: firewall-cmd --reload
